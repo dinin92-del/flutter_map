@@ -158,12 +158,27 @@ class TileImage extends ChangeNotifier {
 
   void _onImageLoadSuccess(ImageInfo imageInfo, bool synchronousCall) {
     loadError = false;
-    this.imageInfo = imageInfo;
 
-    if (!_disposed) {
-      _display();
-      onLoadComplete(coordinates);
+    // The tile was pruned while its image was still loading, so nothing will
+    // ever paint it. `ImageStreamCompleter.setImage` hands every listener its
+    // OWN handle and the listener owns it: when a `RawImage` is built the
+    // `RenderImage` takes over and disposes it, but a disposed tile never
+    // builds one. Storing the handle here would leak the decoded image for the
+    // lifetime of the process.
+    //
+    // Only reachable while the image is in flight, i.e. exactly when the user
+    // pans or zooms quickly. It is unnoticeable with 256x256 tiles (256 KB)
+    // and fatal with large ones: measured on an iPhone 11 with 768x768 RGBA
+    // tiles (2.25 MB each), a browsing session leaked ~1.5 images per tile and
+    // the process was killed by jetsam at the 2098 MB hard limit.
+    if (_disposed) {
+      imageInfo.dispose();
+      return;
     }
+
+    this.imageInfo = imageInfo;
+    _display();
+    onLoadComplete(coordinates);
   }
 
   void _onImageLoadError(Object exception, StackTrace? stackTrace) {
