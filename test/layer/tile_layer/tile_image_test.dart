@@ -4,8 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../test_utils/test_frame_driver.dart';
 
-
-
 void main() {
   testWidgets(
     'disposes the image handed to a tile pruned during listener dispatch',
@@ -81,10 +79,10 @@ void main() {
       // object takes over at build time") was wrong and leaked one handle
       // per painted frame — measured on device as ~0.3/tile after the
       // flag-based fix, because the flag exempted exactly the painted frames.
-      final first =
-          (await tester.runAsync(() => createTestImage(width: 8, height: 8, cache: false)))!;
-      final second =
-          (await tester.runAsync(() => createTestImage(width: 9, height: 9, cache: false)))!;
+      final first = (await tester
+          .runAsync(() => createTestImage(width: 8, height: 8, cache: false)))!;
+      final second = (await tester
+          .runAsync(() => createTestImage(width: 9, height: 9, cache: false)))!;
       final base1 = first.debugGetOpenHandleStackTraces()!.length;
 
       final completer = DrivenCompleter();
@@ -115,8 +113,8 @@ void main() {
   testWidgets(
     'dispose frees the current handle and nulls the field',
     (tester) async {
-      final image =
-          (await tester.runAsync(() => createTestImage(width: 8, height: 8, cache: false)))!;
+      final image = (await tester
+          .runAsync(() => createTestImage(width: 8, height: 8, cache: false)))!;
       final baseline = image.debugGetOpenHandleStackTraces()!.length;
 
       final completer = DrivenCompleter();

@@ -22,7 +22,6 @@ import '../../test_utils/test_frame_driver.dart';
 /// caches by size and returns clones of one shared image, which makes two
 /// "independent" counters move in lockstep and hides per-frame attribution.
 
-
 Widget _host(TileImage tileImage) => Directionality(
       textDirection: TextDirection.ltr,
       child: Stack(
